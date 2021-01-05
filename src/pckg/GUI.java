@@ -46,12 +46,12 @@ public class GUI {
 	private JButton btnSubmitTask;
 	private String[] task_db = { "get", "sth", "from", "db" };
 	private String[] employee_db = { "get", "sth", "from", "db" };
-	Task task_obj ;
+	Task task_obj;
 	Employee emp_obj;
 	protected Map<String, String> emp_entry = new HashMap<String, String>();
 	String[] emp_key = { "name", "ID", "phone" };
 	protected Map<String, String> task_entry = new HashMap<String, String>();
-	String[] task_key = { "title", "body", "employee", "start_date", "due_date", "status", "submission_date" };
+	String[] task_key = { "title", "body", "employee", "start_date", "due_date", "status", "submission_date", "id" };
 	private JTable table;
 	Object[][] tasks;
 	Object[][] employees;
@@ -104,7 +104,7 @@ public class GUI {
 		Home.add(viewpanel);
 		viewpanel.setLayout(null);
 		viewpanel.setVisible(false);
-		
+
 		JLabel lblNewLabel = new JLabel("");
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel.setBounds(193, 11, 124, 29);
@@ -152,7 +152,7 @@ public class GUI {
 		JButton btnAdd_1 = new JButton("ADD");
 		btnAdd_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				emp_obj = new Employee(textField_1.getText(), Integer.parseInt(textField_2.getText()), textField_3.getText());
+				emp_obj = new Employee(textField_1.getText(), textField_2.getText(), textField_3.getText());
 				int err = emp_obj.add_employee(emp_key);
 				if (err == 1)
 					JOptionPane.showMessageDialog(frame, "Possible duplicate employee!", "Error",
@@ -238,17 +238,13 @@ public class GUI {
 		JButton btnAdd = new JButton("ADD");
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				task_obj = new Task(taskcomboBox.getSelectedItem().toString(), textArea.getText(), employeecomboBox.getSelectedItem().toString()
-						, "5/1/2021", "5/1/2021", "0", "5/1/2021");
-				int e = task_obj.assign_task(task_key);
-				if (e == 1)
-					JOptionPane.showMessageDialog(frame, "Possible duplicate of task!", "Error",
-							JOptionPane.ERROR_MESSAGE);
-				else {
-					JOptionPane.showMessageDialog(frame, "New Task added successfully!", "Success",
-							JOptionPane.INFORMATION_MESSAGE);
-				}
-				
+				task_obj = new Task(taskcomboBox.getSelectedItem().toString(), textArea.getText(),
+						employeecomboBox.getSelectedItem().toString(), "5/1/2021", "5/1/2021", "0", "5/1/2021", "");
+				task_obj.assign_task(task_key);
+
+				JOptionPane.showMessageDialog(frame, "New Task added successfully!", "Success",
+						JOptionPane.INFORMATION_MESSAGE);
+
 				tasks = task_obj.load_table();
 			}
 		});
@@ -300,19 +296,19 @@ public class GUI {
 				viewpanel.setVisible(true);
 				top_panel = "task";
 				btnSubmitTask.setVisible(true);
-				
+
 				// get tasks from DB
-				task_obj = new Task("","","","","","","");
+				task_obj = new Task("", "", "", "", "", "", "", "");
 				tasks = task_obj.load_table();
-				
+
 				table = new JTable(tasks, task_key);
 				table.setBounds(10, 12, 480, 419);
 				viewpanel.add(table);
-				
+
 				JScrollPane scrollPane = new JScrollPane(table);
 				scrollPane.setBounds(10, 12, 480, 419);
 				viewpanel.add(scrollPane);
-				
+
 			}
 		});
 		btnViewTasks.setBounds(10, 162, 132, 23);
@@ -333,17 +329,17 @@ public class GUI {
 			public void actionPerformed(ActionEvent arg0) {
 				top_panel = "employee";
 				viewpanel.setVisible(true);
-				employeepanel.setVisible(false); 
+				employeepanel.setVisible(false);
 				taskpanel.setVisible(false);
 				btnSubmitTask.setVisible(false);
-				
-				emp_obj = new Employee("",0,"");
+
+				emp_obj = new Employee("", "", "");
 				employees = emp_obj.load_table();
-				
+
 				table = new JTable(employees, emp_key);
 				table.setBounds(10, 12, 480, 419);
 				viewpanel.add(table);
-				
+
 				JScrollPane scrollPane = new JScrollPane(table);
 				scrollPane.setBounds(10, 12, 480, 419);
 				viewpanel.add(scrollPane);
@@ -397,6 +393,41 @@ public class GUI {
 		textField.setColumns(10);
 
 		JButton btnDelete = new JButton(new ImageIcon("/Office_manager/delete.png"));
+		btnDelete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				int row = table.getSelectedRow();
+				if (top_panel.equals("task")) {
+					if (row == -1) {
+						JOptionPane.showMessageDialog(frame, "Please select an entry!", "Error",
+								JOptionPane.ERROR_MESSAGE);
+					} else {
+						for (int j = 0; j < 3; j++) {
+							System.out.print(table.getValueAt(row, j) + " ");
+						}
+						System.out.println();
+						task_obj = new Task("", "", "", "", "", "", "", "");
+						task_obj.delete_task(table.getValueAt(row, 7).toString());
+						JOptionPane.showMessageDialog(frame, "Employee record deleted successfully!", "Success",
+								JOptionPane.INFORMATION_MESSAGE);
+					}
+				}else {
+					if (row == -1) {
+						JOptionPane.showMessageDialog(frame, "Please select an entry!", "Error",
+								JOptionPane.ERROR_MESSAGE);
+					} else {
+						for (int j = 0; j < 3; j++) {
+							System.out.print(table.getValueAt(row, j) + " ");
+						}
+						System.out.println();
+						emp_obj = new Employee("", "", "");
+						emp_obj.delete_employee(table.getValueAt(row, 1).toString());
+						JOptionPane.showMessageDialog(frame, "Employee record deleted successfully!", "Success",
+								JOptionPane.INFORMATION_MESSAGE);
+					}
+					
+				}
+			}
+		});
 		btnDelete.setBounds(457, 23, 33, 23);
 		toolbarpanel.add(btnDelete);
 
@@ -407,17 +438,31 @@ public class GUI {
 		JButton btnUpdate = new JButton("Update");
 		btnUpdate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if (top_panel.equals("employee")) {
-					viewpanel.setVisible(false);
-					employeepanel.setVisible(true);
-					taskpanel.setVisible(false);
-				} else if (top_panel.equals("task")) {
-					viewpanel.setVisible(false);
-					employeepanel.setVisible(false);
-					taskpanel.setVisible(true);
-					lblNewTask.setText("Edit task");
-				} else {
+				int row = table.getSelectedRow();
+				if (row == -1) {
 					JOptionPane.showMessageDialog(frame, "Please select an entry!", "Error", JOptionPane.ERROR_MESSAGE);
+				} else {
+					System.out.println("row is " + row);
+					int column = table.getColumnCount();
+					for (int j = 0; j < column; j++) {
+						System.out.print(table.getValueAt(row, j) + " ");
+					}
+					System.out.println();
+
+					if (top_panel.equals("task")) {
+						task_obj = new Task(table.getValueAt(row, 0).toString(), table.getValueAt(row, 1).toString(),
+								table.getValueAt(row, 2).toString(), table.getValueAt(row, 3).toString(),
+								table.getValueAt(row, 4).toString(), table.getValueAt(row, 5).toString(),
+								table.getValueAt(row, 6).toString(), table.getValueAt(row, 7).toString());
+
+						task_obj.update_task(task_key);
+					} else if (top_panel.equals("employee")) {
+
+						emp_obj = new Employee(table.getValueAt(row, 0).toString(), table.getValueAt(row, 2).toString(),
+								table.getValueAt(row, 1).toString());
+
+						emp_obj.update_employee(emp_key, table.getValueAt(row, 2).toString());
+					}
 				}
 			}
 		});

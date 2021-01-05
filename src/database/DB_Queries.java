@@ -22,8 +22,8 @@ public abstract class DB_Queries {
 		try {
 			rs = connect.createStatement().executeQuery(sql);
 			while (rs.next()) {
-				task_table.add( new Task(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),
-						rs.getString(5), rs.getString(6), rs.getString(7)));
+				task_table.add(new Task(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),
+						rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8)));
 			}
 			rs.close();
 		} catch (SQLException x) {
@@ -31,7 +31,7 @@ public abstract class DB_Queries {
 		}
 		return task_table;
 	}
-	
+
 	protected ArrayList<Employee> load_employee_table(Connection connect, ResultSet rs, String tablename, int index) {
 		int count = get_row_count(connect, rs, tablename);
 		ArrayList<Employee> emp_table = new ArrayList<Employee>();
@@ -41,7 +41,7 @@ public abstract class DB_Queries {
 		try {
 			rs = connect.createStatement().executeQuery(sql);
 			while (rs.next()) {
-				emp_table.add(new Employee(rs.getString(1), Integer.parseInt(rs.getString(2)), rs.getString(3)));
+				emp_table.add(new Employee(rs.getString(1), rs.getString(2), rs.getString(3)));
 			}
 			rs.close();
 		} catch (SQLException x) {
@@ -60,9 +60,6 @@ public abstract class DB_Queries {
 
 			pr.execute();
 			pr.close();
-
-		} catch (SQLIntegrityConstraintViolationException e) {
-			return 1;
 		} catch (SQLException x) {
 			x.printStackTrace();
 			return 1;
@@ -71,22 +68,50 @@ public abstract class DB_Queries {
 	}
 
 	protected int Update_entry(Connection connect, PreparedStatement pr, Map<String, String> row, String sql,
-			String[] key) {
+			String[] key, String table, int id) {
 		// TODO Auto-generated method stub
 		try {
 			pr = connect.prepareStatement(sql);
-
-			for (int i = 0; i < key.length; i++)
+			int i;
+			for (i = 0; i < key.length; i++)
 				pr.setString(i + 1, row.get(key[i]));
 
+			pr.setInt(i, id);	
 			pr.executeUpdate();
-			pr.close();
 
-		} catch (SQLIntegrityConstraintViolationException e) {
-			return 1;
 		} catch (SQLException x) {
 			x.printStackTrace();
 			return 1;
+		} finally {
+			if (pr != null) {
+				try {
+					pr.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return 0;
+	}
+	
+	protected int delete_entry(Connection connect, PreparedStatement pr, String sql, int id) {
+		// TODO Auto-generated method stub
+		try {
+			pr = connect.prepareStatement(sql);
+			pr.setInt(1, id);	
+			pr.executeUpdate();
+
+		} catch (SQLException x) {
+			x.printStackTrace();
+			return 1;
+		} finally {
+			if (pr != null) {
+				try {
+					pr.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return 0;
 	}
@@ -97,10 +122,25 @@ public abstract class DB_Queries {
 		try {
 			rs = connect.createStatement().executeQuery(sql);
 			count = Integer.parseInt(rs.getString(1));
+			rs.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return count;
+	}
+
+	protected void set_primary(PreparedStatement pr, String table_name, int counter, Map<String, String> row) {
+		if (table_name.equals("task")) {
+			try {
+				pr.setString(counter, row.get("title"));
+				pr.setString(counter + 1, row.get("employee"));
+				pr.setString(counter + 2, row.get("due_date"));
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
 	}
 }

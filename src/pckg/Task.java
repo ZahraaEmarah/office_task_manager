@@ -20,13 +20,14 @@ public class Task extends DB_Queries {
 	private String deadline;
 	private String employee_name;
 	private String status;
-
+	private String id;
+	
 	Connection connect;
 	PreparedStatement pr = null;
 	ResultSet rs = null;
 
 	public Task(String title, String des, String employee, String creation_date, String deadline, String status,
-			String submission_date) {
+			String submission_date, String id) {
 		try {
 			this.connect = DBconnection.get_connection();
 		} catch (SQLException e) {
@@ -43,6 +44,7 @@ public class Task extends DB_Queries {
 		this.deadline = deadline;
 		this.status = status;
 		this.submission_date = submission_date;
+		this.id = id;
 	}
 
 	public boolean isConnected() {
@@ -50,22 +52,27 @@ public class Task extends DB_Queries {
 	}
 
 	public int assign_task(String[] keys) {
-		String sql = "INSERT INTO task(title,body,employee,start_date,due_date,status,submission_date) VALUES (?,?,?,?,?,?,?)";
-		return Add_to_table(connect, pr, map(), sql, keys);
+		String sql = "INSERT INTO task(title,body,employee,start_date,due_date,status,submission_date,task_id) VALUES (?,?,?,?,?,?,?,?)";
+		int ret =  Add_to_table(connect,pr, map(), sql, keys);
+		close_connect();
+		return ret;
 	}
 
-	public int submit_task(Map<String, String> row, String[] keys) {
+	public void submit_task(Map<String, String> row, String[] keys) {
 		String sql = "UPDATE task SET status = ?" + " where title = ?, employee=?, due_date=?";
 		row.replace("status", "1");
-		return Update_entry(connect, pr, row, sql, keys);
+		//int ret = Update_entry(connect,pr, row, sql, keys, "task",);
+		close_connect();
+		//return ret;
 	}
 
 	public Object[][] load_table() {
 		String table = "task";
-		ArrayList<Task> t = load_task_table(connect, rs, table, 7);
-		Object[][] tasks = new Object[t.size()][7];
-		for(int i=0; i<t.size(); i++) {
-			System.out.println(t.get(i).get_title()+ "\n" + t.get(i).get_due_date()+ "\n" + t.get(i).get_employee_name());
+		ArrayList<Task> t = load_task_table(connect,rs, table, 8);
+		Object[][] tasks = new Object[t.size()][8];
+		for (int i = 0; i < t.size(); i++) {
+			System.out.println(
+					t.get(i).get_title() + "\n" + t.get(i).get_due_date() + "\n" + t.get(i).get_employee_name());
 			tasks[i][0] = t.get(i).get_title();
 			tasks[i][1] = t.get(i).get_body();
 			tasks[i][2] = t.get(i).get_employee_name();
@@ -73,12 +80,30 @@ public class Task extends DB_Queries {
 			tasks[i][4] = t.get(i).get_due_date();
 			tasks[i][5] = t.get(i).get_status();
 			tasks[i][6] = t.get(i).get_submission_date();
+			tasks[i][7] = t.get(i).get_id();
 		}
+		close_connect();
 		return tasks;
 	}
 
 	public void search_task() {
 
+	}
+
+	public int delete_task(String primary_key) {
+		String sql = "DELETE FROM task where task_id LIKE ? ";
+		int ret = delete_entry(connect,pr, sql, Integer.parseInt(primary_key));
+		close_connect();
+		return ret;
+	}
+	
+	public int update_task(String[] keys) {
+		String sql = "UPDATE task SET title = ?, body = ?, employee = ?, start_date = ?, due_date = ?, status = ?, submission_date = ? "
+				+ " WHERE task_id = ?";
+		
+		int ret = Update_entry(connect,pr, map(), sql, keys, "task", Integer.parseInt(id));
+		close_connect();
+		return ret;
 	}
 
 	public Map<String, String> map() {
@@ -90,6 +115,7 @@ public class Task extends DB_Queries {
 		row.put("due_date", "5/1/2021");
 		row.put("status", "0");
 		row.put("submission_date", "5/1/2021");
+		row.put("id", id);
 		return row;
 	}
 
@@ -119,6 +145,19 @@ public class Task extends DB_Queries {
 
 	public String get_submission_date() {
 		return submission_date;
+	}
+	
+	public String get_id() {
+		return id;
+	}
+	
+	private void close_connect() {
+		try {
+			connect.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
