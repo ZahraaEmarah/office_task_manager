@@ -16,7 +16,6 @@ import javax.swing.JTextField;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -167,7 +166,7 @@ public class GUI {
 		btnAdd_1.setBounds(216, 430, 89, 23);
 		employeepanel.add(btnAdd_1);
 
-		JButton btnExit = new JButton("Exit");
+		JButton btnExit = new JButton(new ImageIcon("/Office_manager/close.png"));
 		btnExit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				viewpanel.setVisible(false);
@@ -175,7 +174,7 @@ public class GUI {
 				taskpanel.setVisible(false);
 			}
 		});
-		btnExit.setBounds(401, 11, 89, 23);
+		btnExit.setBounds(458, 11, 32, 23);
 		employeepanel.add(btnExit);
 
 		taskpanel = new JPanel();
@@ -214,8 +213,8 @@ public class GUI {
 		textArea.setBounds(25, 256, 450, 182);
 		taskpanel.add(textArea);
 
-		JButton button = new JButton("Exit");
-		button.setBounds(401, 11, 89, 23);
+		JButton button = new JButton(new ImageIcon("/Office_manager/close.png"));
+		button.setBounds(458, 11, 32, 23);
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				viewpanel.setVisible(false);
