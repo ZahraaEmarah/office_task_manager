@@ -4,13 +4,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import pckg.DBconnection;
+import database.DBconnection;
 
 public class login {
 
 	Connection connect;
-	String name = "user";
-
+	private String name = "user";
 
 	public login() {
 
@@ -28,7 +27,7 @@ public class login {
 		return this.connect != null;
 	}
 
-	public boolean Logging(String PIN) throws Exception {
+	public boolean Login(String PIN) throws Exception {
 		PreparedStatement pr = null;
 		ResultSet rs = null;
 
@@ -41,7 +40,7 @@ public class login {
 			rs = pr.executeQuery();
 			name = rs.getString(2);
 			set_name(name);
-			
+
 			if (rs.next()) {
 				return true;
 			}
@@ -52,16 +51,15 @@ public class login {
 		}
 
 		finally {
-			{
-				pr.close();
-				rs.close();
-			}
+			pr.close();
+			rs.close();
 		}
 	}
-	
+
 	public void set_name(String n) {
 		name = n;
 	}
+
 	public String get_name() {
 		return name;
 	}
