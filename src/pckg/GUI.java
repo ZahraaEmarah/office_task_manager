@@ -17,12 +17,16 @@ import javax.swing.JTextField;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableModel;
+
 import java.awt.Font;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
@@ -53,6 +57,7 @@ public class GUI {
 	private String[] employee_db = { "get", "sth", "from", "db" };
 	Task task_obj;
 	Employee emp_obj;
+	Manager mg;
 	protected Map<String, String> emp_entry = new HashMap<String, String>();
 	String[] emp_key = { "name", "ID", "phone" };
 	protected Map<String, String> task_entry = new HashMap<String, String>();
@@ -389,12 +394,6 @@ public class GUI {
 		btnViewTasks.setBounds(10, 162, 132, 23);
 		toolbar.add(btnViewTasks);
 
-		JLabel lblHour = new JLabel("Hour");
-		lblHour.setFont(new Font("Tahoma", Font.PLAIN, 25));
-		lblHour.setHorizontalAlignment(SwingConstants.CENTER);
-		lblHour.setBounds(10, 11, 132, 41);
-		toolbar.add(lblHour);
-
 		JSeparator separator = new JSeparator();
 		separator.setBounds(10, 196, 132, 2);
 		toolbar.add(separator);
@@ -424,6 +423,7 @@ public class GUI {
 		toolbar.add(btnViewEmployees);
 
 		JLabel lblHeyManager = new JLabel("");
+		lblHeyManager.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		lblHeyManager.setHorizontalAlignment(SwingConstants.CENTER);
 		lblHeyManager.setBounds(10, 72, 132, 14);
 		toolbar.add(lblHeyManager);
@@ -436,6 +436,20 @@ public class GUI {
 		btnViewDeadlines.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				btnSubmitTask.setVisible(false);
+				SimpleDateFormat formatter= new SimpleDateFormat("dd-MM-yyyy");
+				Date date = new Date(System.currentTimeMillis());
+				System.out.println(formatter.format(date));
+				mg = new Manager("", "");
+				tasks = mg.Notify_manager(date);
+				System.out.println(tasks);
+				
+				table = new JTable(tasks, task_key);
+				table.setBounds(10, 12, 480, 419);
+				viewpanel.add(table);
+
+				JScrollPane scrollPane = new JScrollPane(table);
+				scrollPane.setBounds(10, 12, 480, 419);
+				viewpanel.add(scrollPane);
 			}
 		});
 		btnViewDeadlines.setBounds(10, 290, 132, 23);
@@ -545,6 +559,7 @@ public class GUI {
 						JOptionPane.showMessageDialog(frame, "No results found", "Error", JOptionPane.ERROR_MESSAGE);
 					}
 					
+					viewpanel.remove(table);
 					table = new JTable(employees, emp_key);
 					table.setBounds(10, 12, 480, 419);
 					viewpanel.add(table);
