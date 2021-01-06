@@ -40,7 +40,7 @@ public class Manager extends DB_Queries {
 		
 		SimpleDateFormat formatter= new SimpleDateFormat("dd-MM-yyyy");
 		String search_date = formatter.format(d);
-		String sql = "SELECT * FROM task WHERE due_date < ?";
+		String sql = "SELECT * FROM task WHERE due_date > ?";
 		ArrayList<Task> t = fetch_entry(connect,pr, rs, sql, "task", search_date);
 		Object[][] tasks = new Object[t.size()][8];
 		for (int i = 0; i < t.size(); i++) {
