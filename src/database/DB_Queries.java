@@ -14,9 +14,7 @@ import pckg.Task;
 public abstract class DB_Queries {
 
 	protected ArrayList<Task> load_task_table(Connection connect, ResultSet rs, String tablename, int index) {
-		int count = get_row_count(connect, rs, tablename);
 		ArrayList<Task> task_table = new ArrayList<Task>();
-		System.out.println("count is " + count);
 		String sql = "SELECT * FROM " + tablename;
 
 		try {
@@ -33,9 +31,7 @@ public abstract class DB_Queries {
 	}
 
 	protected ArrayList<Employee> load_employee_table(Connection connect, ResultSet rs, String tablename, int index) {
-		int count = get_row_count(connect, rs, tablename);
 		ArrayList<Employee> emp_table = new ArrayList<Employee>();
-		System.out.println("count is " + count);
 		String sql = "SELECT * FROM " + tablename;
 
 		try {
@@ -55,7 +51,7 @@ public abstract class DB_Queries {
 		// TODO Auto-generated method stub
 		try {
 			pr = connect.prepareStatement(sql);
-			for (int i = 0; i < key.length; i++)
+			for (int i = 0; i < key.length-1; i++)
 				pr.setString(i + 1, row.get(key[i]));
 
 			pr.execute();
@@ -76,7 +72,7 @@ public abstract class DB_Queries {
 			for (i = 0; i < key.length; i++)
 				pr.setString(i + 1, row.get(key[i]));
 
-			pr.setInt(i, id);	
+			pr.setInt(i, id);
 			pr.executeUpdate();
 
 		} catch (SQLException x) {
@@ -93,12 +89,12 @@ public abstract class DB_Queries {
 		}
 		return 0;
 	}
-	
+
 	protected int delete_entry(Connection connect, PreparedStatement pr, String sql, int id) {
 		// TODO Auto-generated method stub
 		try {
 			pr = connect.prepareStatement(sql);
-			pr.setInt(1, id);	
+			pr.setInt(1, id);
 			pr.executeUpdate();
 
 		} catch (SQLException x) {
@@ -114,6 +110,29 @@ public abstract class DB_Queries {
 			}
 		}
 		return 0;
+	}
+
+	protected <E> ArrayList<E> fetch_entry(Connection connect, PreparedStatement pr, ResultSet rs, String sql,String table, String search_word) {
+		ArrayList<E> result = new ArrayList<E>();
+		try {
+			pr = connect.prepareStatement(sql);
+			pr.setString(1, search_word);
+			rs = pr.executeQuery();
+			
+			while (rs.next()) {
+				if (table.equals("employee"))
+					result.add((E) new Employee(rs.getString(1), rs.getString(2), rs.getString(3)));
+				else {
+					result.add((E) new Task(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),
+							rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8)));
+				}
+			}
+			rs.close();
+		} catch (SQLException x) {
+			x.printStackTrace();
+		}
+		System.out.println("result iss " + result);
+		return result;
 	}
 
 	protected int get_row_count(Connection connect, ResultSet rs, String table) {

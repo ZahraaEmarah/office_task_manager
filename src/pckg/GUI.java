@@ -3,6 +3,7 @@ package pckg;
 import java.awt.EventQueue;
 
 import javax.imageio.ImageIO;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -16,6 +17,8 @@ import javax.swing.JTextField;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,12 +31,14 @@ import javax.swing.JTextArea;
 import javax.swing.JSeparator;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
+import javax.swing.JRadioButton;
 
 public class GUI {
 
 	private JFrame frame;
 	private final JPanel login = new JPanel();
 	private JPasswordField passwordField;
+	private JPasswordField PINField;
 	private JTextField textField;
 	login lg = new login();
 	private JTextField textField_1;
@@ -55,6 +60,8 @@ public class GUI {
 	private JTable table;
 	Object[][] tasks;
 	Object[][] employees;
+	private JTextField textField_4;
+	private JTextField textField_5;
 
 	/**
 	 * Launch the application.
@@ -98,16 +105,57 @@ public class GUI {
 		Home.setBounds(0, 0, 672, 570);
 		frame.getContentPane().add(Home);
 		Home.setLayout(null);
+		
+		JPanel settings = new JPanel();
+		settings.setBounds(162, 76, 500, 483);
+		Home.add(settings);
+		settings.setLayout(null);
+		settings.setVisible(false);
+		
+		JLabel lblName = new JLabel("PIN:");
+		lblName.setBounds(58, 216, 80, 14);
+		settings.add(lblName);
+		
+		JLabel label = new JLabel("Name:");
+		label.setBounds(58, 116, 105, 14);
+		settings.add(label);
+		
+		textField_4 = new JTextField();
+		textField_4.setBounds(58, 141, 230, 20);
+		settings.add(textField_4);
+		textField_4.setColumns(10);
+		
+		PINField = new JPasswordField();
+		PINField.setBounds(58, 240, 105, 20);
+		settings.add(PINField);
+		PINField.setColumns(10);
+		
+		JLabel lblProfile = new JLabel("Profile");
+		lblProfile.setHorizontalAlignment(SwingConstants.CENTER);
+		lblProfile.setFont(new Font("Tahoma", Font.PLAIN, 33));
+		lblProfile.setBounds(189, 11, 112, 37);
+		settings.add(lblProfile);
+		
+		JButton btnSave = new JButton("Save");
+		btnSave.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Manager mg = new Manager(textField_4.getText(), PINField.getText());
+				mg.Change_name();
+				mg.Change_PIN();
+			}
+		});
+		btnSave.setBounds(199, 331, 89, 23);
+		settings.add(btnSave);
 
 		viewpanel = new JPanel();
 		viewpanel.setBounds(162, 76, 500, 483);
 		Home.add(viewpanel);
-		viewpanel.setLayout(null);
 		viewpanel.setVisible(false);
+		viewpanel.setLayout(null);
 
 		JLabel lblNewLabel = new JLabel("");
-		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel.setBounds(193, 11, 124, 29);
+		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		viewpanel.add(lblNewLabel);
 
 		employeepanel = new JPanel();
@@ -239,13 +287,11 @@ public class GUI {
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				task_obj = new Task(taskcomboBox.getSelectedItem().toString(), textArea.getText(),
-						employeecomboBox.getSelectedItem().toString(), "5/1/2021", "5/1/2021", "0", "5/1/2021", "");
+						employeecomboBox.getSelectedItem().toString(), "5/1/2021", "5/1/2021", "Ongoing", "5/1/2021", "");
 				task_obj.assign_task(task_key);
 
 				JOptionPane.showMessageDialog(frame, "New Task added successfully!", "Success",
 						JOptionPane.INFORMATION_MESSAGE);
-
-				tasks = task_obj.load_table();
 			}
 		});
 		btnAdd.setBounds(386, 449, 89, 23);
@@ -257,9 +303,37 @@ public class GUI {
 		toolbar.setLayout(null);
 
 		JPanel toolbarpanel = new JPanel();
-		toolbarpanel.setBounds(162, 11, 500, 54);
+		toolbarpanel.setBounds(162, 0, 500, 65);
 		Home.add(toolbarpanel);
 		toolbarpanel.setLayout(null);
+
+		btnSubmitTask = new JButton("Submit task");
+		btnSubmitTask.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int row = table.getSelectedRow();
+				task_obj = new Task(table.getValueAt(row, 0).toString(), table.getValueAt(row, 1).toString(),
+						table.getValueAt(row, 2).toString(), table.getValueAt(row, 3).toString(),
+						table.getValueAt(row, 4).toString(), table.getValueAt(row, 5).toString(),
+						table.getValueAt(row, 6).toString(), table.getValueAt(row, 7).toString());
+				task_obj.submit_task(task_entry, task_key);
+			}
+		});
+		btnSubmitTask.setBounds(246, 33, 114, 23);
+		toolbarpanel.add(btnSubmitTask);
+
+		JRadioButton rdbtnEmployees = new JRadioButton("Employees");
+		rdbtnEmployees.setBounds(67, 7, 90, 23);
+		toolbarpanel.add(rdbtnEmployees);
+
+		JRadioButton rdbtnTasks = new JRadioButton("Tasks");
+		rdbtnTasks.setBounds(154, 7, 109, 23);
+		toolbarpanel.add(rdbtnTasks);
+		btnSubmitTask.setVisible(false);
+		Home.setVisible(false);
+
+		ButtonGroup group = new ButtonGroup();
+		group.add(rdbtnEmployees);
+		group.add(rdbtnTasks);
 
 		JButton btnNewButton = new JButton("Assign Task");
 		btnNewButton.addActionListener(new ActionListener() {
@@ -294,6 +368,7 @@ public class GUI {
 				taskpanel.setVisible(false);
 				employeepanel.setVisible(false);
 				viewpanel.setVisible(true);
+				settings.setVisible(false);
 				top_panel = "task";
 				btnSubmitTask.setVisible(true);
 
@@ -384,11 +459,23 @@ public class GUI {
 				passwordField.setText("");
 			}
 		});
-		btnLogOut.setBounds(10, 362, 132, 23);
+		btnLogOut.setBounds(10, 396, 132, 23);
 		toolbar.add(btnLogOut);
+		
+		JButton btnSettings = new JButton("Settings");
+		btnSettings.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				taskpanel.setVisible(false);
+				employeepanel.setVisible(false);
+				viewpanel.setVisible(false);
+				settings.setVisible(true);
+			}
+		});
+		btnSettings.setBounds(10, 362, 132, 23);
+		toolbar.add(btnSettings);
 
 		textField = new JTextField();
-		textField.setBounds(6, 23, 187, 20);
+		textField.setBounds(6, 34, 187, 20);
 		toolbarpanel.add(textField);
 		textField.setColumns(10);
 
@@ -410,7 +497,7 @@ public class GUI {
 						JOptionPane.showMessageDialog(frame, "Employee record deleted successfully!", "Success",
 								JOptionPane.INFORMATION_MESSAGE);
 					}
-				}else {
+				} else {
 					if (row == -1) {
 						JOptionPane.showMessageDialog(frame, "Please select an entry!", "Error",
 								JOptionPane.ERROR_MESSAGE);
@@ -424,15 +511,56 @@ public class GUI {
 						JOptionPane.showMessageDialog(frame, "Employee record deleted successfully!", "Success",
 								JOptionPane.INFORMATION_MESSAGE);
 					}
-					
+
 				}
 			}
 		});
-		btnDelete.setBounds(457, 23, 33, 23);
+		btnDelete.setBounds(457, 33, 33, 23);
 		toolbarpanel.add(btnDelete);
 
 		JButton btnSearch = new JButton(new ImageIcon("/Office_manager/search.png"));
-		btnSearch.setBounds(203, 23, 33, 20);
+		btnSearch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+
+				if (rdbtnTasks.isSelected()) {
+
+					task_obj = new Task("", "", "", "", "", "", "", "");
+					tasks = task_obj.search_task(textField.getText());
+					
+					if (tasks.length <= 0) {
+						JOptionPane.showMessageDialog(frame, "No results found", "Error", JOptionPane.ERROR_MESSAGE);
+					}
+
+					table = new JTable(tasks, task_key);
+					table.setBounds(10, 12, 480, 419);
+					viewpanel.add(table);
+					viewpanel.setVisible(true);
+
+				} else if (rdbtnEmployees.isSelected()) {
+
+					emp_obj = new Employee("", "", "");
+					employees = emp_obj.search_employee(textField.getText());
+					
+					if (employees.length <= 0) {
+						JOptionPane.showMessageDialog(frame, "No results found", "Error", JOptionPane.ERROR_MESSAGE);
+					}
+					
+					table = new JTable(employees, emp_key);
+					table.setBounds(10, 12, 480, 419);
+					viewpanel.add(table);
+					viewpanel.setVisible(true);
+					
+				} else {
+					JOptionPane.showMessageDialog(frame, "Please select a category", "Error", JOptionPane.ERROR_MESSAGE);
+				}
+
+				JScrollPane scrollPane = new JScrollPane(table);
+				scrollPane.setBounds(10, 12, 480, 419);
+				viewpanel.add(scrollPane);
+
+			}
+		});
+		btnSearch.setBounds(203, 34, 33, 20);
 		toolbarpanel.add(btnSearch);
 
 		JButton btnUpdate = new JButton("Update");
@@ -466,19 +594,12 @@ public class GUI {
 				}
 			}
 		});
-		btnUpdate.setBounds(370, 22, 77, 23);
+		btnUpdate.setBounds(370, 33, 77, 23);
 		toolbarpanel.add(btnUpdate);
 
-		btnSubmitTask = new JButton("Submit task");
-		btnSubmitTask.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				task_obj.submit_task(task_entry, task_key);
-			}
-		});
-		btnSubmitTask.setBounds(246, 22, 114, 23);
-		toolbarpanel.add(btnSubmitTask);
-		btnSubmitTask.setVisible(false);
-		Home.setVisible(false);
+		JLabel lblSearchIn = new JLabel("Search in:");
+		lblSearchIn.setBounds(6, 11, 68, 14);
+		toolbarpanel.add(lblSearchIn);
 
 		login.setBackground(new Color(0, 102, 102));
 		login.setBounds(0, 0, 672, 570);

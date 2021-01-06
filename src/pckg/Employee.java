@@ -55,7 +55,16 @@ public class Employee extends DB_Queries {
 		return ret;
 	}
 
-	public void search_employee() {
+	public Object[][] search_employee(String search_word) {
+		String sql = "SELECT * FROM employee WHERE name = ?";
+		ArrayList<Employee> t = fetch_entry(connect,pr, rs, sql, "employee", search_word);
+		Object[][] tasks = new Object[t.size()][3];
+		for (int i = 0; i < t.size(); i++) {
+			tasks[i][0] = t.get(i).get_name();
+			tasks[i][1] = t.get(i).get_ID();
+			tasks[i][2] = t.get(i).get_phonenumber();
+		}
+		return tasks;
 
 	}
 

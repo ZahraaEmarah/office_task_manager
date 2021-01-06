@@ -52,18 +52,18 @@ public class Task extends DB_Queries {
 	}
 
 	public int assign_task(String[] keys) {
-		String sql = "INSERT INTO task(title,body,employee,start_date,due_date,status,submission_date,task_id) VALUES (?,?,?,?,?,?,?,?)";
+		String sql = "INSERT INTO task(title,body,employee,start_date,due_date,status,submission_date) VALUES (?,?,?,?,?,?,?)";
+		status = "Ongoing";
 		int ret =  Add_to_table(connect,pr, map(), sql, keys);
 		close_connect();
 		return ret;
 	}
 
-	public void submit_task(Map<String, String> row, String[] keys) {
-		String sql = "UPDATE task SET status = ?" + " where title = ?, employee=?, due_date=?";
-		row.replace("status", "1");
-		//int ret = Update_entry(connect,pr, row, sql, keys, "task",);
+	public int submit_task(Map<String, String> row, String[] keys) {
+		status = "Completed";
+		int ret = update_task(keys);
 		close_connect();
-		//return ret;
+		return ret;
 	}
 
 	public Object[][] load_table() {
@@ -71,8 +71,6 @@ public class Task extends DB_Queries {
 		ArrayList<Task> t = load_task_table(connect,rs, table, 8);
 		Object[][] tasks = new Object[t.size()][8];
 		for (int i = 0; i < t.size(); i++) {
-			System.out.println(
-					t.get(i).get_title() + "\n" + t.get(i).get_due_date() + "\n" + t.get(i).get_employee_name());
 			tasks[i][0] = t.get(i).get_title();
 			tasks[i][1] = t.get(i).get_body();
 			tasks[i][2] = t.get(i).get_employee_name();
@@ -86,8 +84,21 @@ public class Task extends DB_Queries {
 		return tasks;
 	}
 
-	public void search_task() {
-
+	public Object[][] search_task(String search_word) {
+		String sql = "SELECT * FROM task WHERE title = ?";
+		ArrayList<Task> t = fetch_entry(connect,pr, rs, sql, "task", search_word);
+		Object[][] tasks = new Object[t.size()][8];
+		for (int i = 0; i < t.size(); i++) {
+			tasks[i][0] = t.get(i).get_title();
+			tasks[i][1] = t.get(i).get_body();
+			tasks[i][2] = t.get(i).get_employee_name();
+			tasks[i][3] = t.get(i).get_start_date();
+			tasks[i][4] = t.get(i).get_due_date();
+			tasks[i][5] = t.get(i).get_status();
+			tasks[i][6] = t.get(i).get_submission_date();
+			tasks[i][7] = t.get(i).get_id();
+		}
+		return tasks;
 	}
 
 	public int delete_task(String primary_key) {
@@ -113,7 +124,7 @@ public class Task extends DB_Queries {
 		row.put("employee", employee_name); // employee
 		row.put("start_date", "5/1/2021");
 		row.put("due_date", "5/1/2021");
-		row.put("status", "0");
+		row.put("status", status);
 		row.put("submission_date", "5/1/2021");
 		row.put("id", id);
 		return row;
