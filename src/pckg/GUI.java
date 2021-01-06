@@ -53,7 +53,7 @@ public class GUI {
 	private JPanel taskpanel;
 	private JPanel viewpanel;
 	private JButton btnSubmitTask;
-	private String[] task_db = { "get", "sth", "from", "db" };
+	private String[] task_db = { "إعداد تقارير", "عمل خطط إسبوعية وشهري ة لتنظيم العم ل", "الردود على المكاتبات الواردة من الجهات الاعلى", "إ عداد يوميات التمام للعاملين", "other" };
 	private String[] employee_db = { "get", "sth", "from", "db" };
 	SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
 	Date date = new Date(System.currentTimeMillis());
@@ -572,7 +572,7 @@ public class GUI {
 						JOptionPane.showMessageDialog(frame, "No results found", "Error", JOptionPane.ERROR_MESSAGE);
 					}
 
-					viewpanel.remove(table);
+
 					table = new JTable(employees, emp_key);
 					table.setBounds(10, 12, 480, 419);
 					viewpanel.add(table);

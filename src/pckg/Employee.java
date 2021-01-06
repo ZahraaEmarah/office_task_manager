@@ -50,14 +50,14 @@ public class Employee extends DB_Queries {
 
 	public int delete_employee(String primary_key) {
 		String sql = "DELETE FROM employee where ID LIKE ? ";
-		int ret = delete_entry(connect,pr, sql, Integer.parseInt(primary_key));
+		int ret = delete_entry(connect, pr, sql, Integer.parseInt(primary_key));
 		close_connect();
 		return ret;
 	}
 
 	public Object[][] search_employee(String search_word) {
 		String sql = "SELECT * FROM employee WHERE name = ?";
-		ArrayList<Employee> t = fetch_entry(connect,pr, rs, sql, "employee", search_word);
+		ArrayList<Employee> t = fetch_entry(connect, pr, rs, sql, "employee", search_word);
 		Object[][] tasks = new Object[t.size()][3];
 		for (int i = 0; i < t.size(); i++) {
 			tasks[i][0] = t.get(i).get_name();
@@ -78,6 +78,23 @@ public class Employee extends DB_Queries {
 			tasks[i][2] = t.get(i).get_phonenumber();
 		}
 		return tasks;
+	}
+
+	public ArrayList<String> get_names() {
+		String sql = "SELECT name FROM employee";
+		ArrayList<String> names = new ArrayList<String>();
+		try {
+			pr = connect.prepareStatement(sql);
+			rs = pr.executeQuery();
+
+			while (rs.next()) {
+				names.add(rs.getString(1));
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return names;
 	}
 
 	public Map<String, String> map() {
