@@ -55,6 +55,8 @@ public class GUI {
 	private JButton btnSubmitTask;
 	private String[] task_db = { "get", "sth", "from", "db" };
 	private String[] employee_db = { "get", "sth", "from", "db" };
+	SimpleDateFormat formatter= new SimpleDateFormat("dd-MM-yyyy");
+	Date date = new Date(System.currentTimeMillis());
 	Task task_obj;
 	Employee emp_obj;
 	Manager mg;
@@ -431,17 +433,22 @@ public class GUI {
 		JSeparator separator_1 = new JSeparator();
 		separator_1.setBounds(10, 277, 132, 2);
 		toolbar.add(separator_1);
+		
+
+		JLabel lblTasksDue = new JLabel("2 tasks due today");
+		lblTasksDue.setHorizontalAlignment(SwingConstants.CENTER);
+		lblTasksDue.setForeground(new Color(204, 0, 0));
+		lblTasksDue.setBounds(10, 324, 132, 14);
+		toolbar.add(lblTasksDue);
 
 		JButton btnViewDeadlines = new JButton("View deadlines");
 		btnViewDeadlines.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				btnSubmitTask.setVisible(false);
-				SimpleDateFormat formatter= new SimpleDateFormat("dd-MM-yyyy");
-				Date date = new Date(System.currentTimeMillis());
-				System.out.println(formatter.format(date));
 				mg = new Manager("", "");
 				tasks = mg.Notify_manager(date);
-				System.out.println(tasks);
+				System.out.println(tasks.length);
+				lblTasksDue.setText(tasks.length + " tasks due today");
 				
 				table = new JTable(tasks, task_key);
 				table.setBounds(10, 12, 480, 419);
@@ -454,12 +461,6 @@ public class GUI {
 		});
 		btnViewDeadlines.setBounds(10, 290, 132, 23);
 		toolbar.add(btnViewDeadlines);
-
-		JLabel lblTasksDue = new JLabel("2 tasks due today");
-		lblTasksDue.setHorizontalAlignment(SwingConstants.CENTER);
-		lblTasksDue.setForeground(new Color(204, 0, 0));
-		lblTasksDue.setBounds(10, 324, 132, 14);
-		toolbar.add(lblTasksDue);
 
 		JSeparator separator_2 = new JSeparator();
 		separator_2.setBounds(10, 349, 132, 2);
@@ -644,6 +645,11 @@ public class GUI {
 						login.setVisible(false);
 						Home.setVisible(true);
 						lblHeyManager.setText("Hello " + lg.get_name());
+						mg = new Manager("", "");
+						tasks = mg.Notify_manager(date);
+						System.out.println(tasks.length);
+						lblTasksDue.setText(tasks.length + " tasks due today");
+						
 					} else {
 						JOptionPane.showMessageDialog(frame, "Wrong PIN", "Error", JOptionPane.ERROR_MESSAGE);
 						passwordField.setText("");
