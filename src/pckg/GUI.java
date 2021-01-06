@@ -55,7 +55,7 @@ public class GUI {
 	private JButton btnSubmitTask;
 	private String[] task_db = { "get", "sth", "from", "db" };
 	private String[] employee_db = { "get", "sth", "from", "db" };
-	SimpleDateFormat formatter= new SimpleDateFormat("dd-MM-yyyy");
+	SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
 	Date date = new Date(System.currentTimeMillis());
 	Task task_obj;
 	Employee emp_obj;
@@ -69,6 +69,8 @@ public class GUI {
 	Object[][] employees;
 	private JTextField textField_4;
 	private JTextField textField_5;
+	private JTextField start;
+	private JTextField due;
 
 	/**
 	 * Launch the application.
@@ -112,37 +114,120 @@ public class GUI {
 		Home.setBounds(0, 0, 672, 570);
 		frame.getContentPane().add(Home);
 		Home.setLayout(null);
-		
+
+		taskpanel = new JPanel();
+		taskpanel.setBounds(162, 76, 500, 483);
+		Home.add(taskpanel);
+		taskpanel.setLayout(null);
+		taskpanel.setVisible(false);
+
+		JLabel lblNewTask = new JLabel("New Task");
+		lblNewTask.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNewTask.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		lblNewTask.setBounds(201, 11, 113, 28);
+		taskpanel.add(lblNewTask);
+
+		JLabel lblChooseATask = new JLabel("choose a task:");
+		lblChooseATask.setBounds(25, 95, 91, 20);
+		taskpanel.add(lblChooseATask);
+
+		JLabel lblAssignTo = new JLabel("Assign to:");
+		lblAssignTo.setBounds(25, 133, 91, 14);
+		taskpanel.add(lblAssignTo);
+
+		JLabel lblSetStartDate = new JLabel("set start date:");
+		lblSetStartDate.setBounds(25, 190, 91, 14);
+		taskpanel.add(lblSetStartDate);
+
+		JLabel lblSetDueDate = new JLabel("set due date:");
+		lblSetDueDate.setBounds(281, 190, 75, 14);
+		taskpanel.add(lblSetDueDate);
+
+		JLabel lblDescription = new JLabel("Description:");
+		lblDescription.setBounds(25, 231, 91, 14);
+		taskpanel.add(lblDescription);
+
+		JTextArea textArea = new JTextArea();
+		textArea.setBounds(25, 256, 450, 182);
+		taskpanel.add(textArea);
+
+		JButton button = new JButton(new ImageIcon("/Office_manager/close.png"));
+		button.setBounds(458, 11, 32, 23);
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				viewpanel.setVisible(false);
+				employeepanel.setVisible(false);
+				taskpanel.setVisible(false);
+			}
+		});
+		taskpanel.add(button);
+
+		JComboBox taskcomboBox = new JComboBox(task_db);
+		taskcomboBox.setBounds(126, 95, 218, 20);
+		taskpanel.add(taskcomboBox);
+
+		JComboBox employeecomboBox = new JComboBox(employee_db);
+		employeecomboBox.setBounds(126, 130, 218, 20);
+		taskpanel.add(employeecomboBox);
+
+		// UtilDateModel model = new UtilDateModel();
+		// JDatePanelImpl d = new JDatePanelImpl(model);
+
+		JButton btnAdd = new JButton("ADD");
+		btnAdd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				task_obj = new Task(taskcomboBox.getSelectedItem().toString(), textArea.getText(),
+						employeecomboBox.getSelectedItem().toString(), start.getText(), due.getText(), "Ongoing", " ",
+						"");
+				task_obj.assign_task(task_key);
+
+				JOptionPane.showMessageDialog(frame, "New Task added successfully!", "Success",
+						JOptionPane.INFORMATION_MESSAGE);
+			}
+		});
+		btnAdd.setBounds(386, 449, 89, 23);
+		taskpanel.add(btnAdd);
+
+		start = new JTextField();
+		start.setBounds(101, 187, 118, 20);
+		taskpanel.add(start);
+		start.setColumns(10);
+
+		due = new JTextField();
+		due.setColumns(10);
+		due.setBounds(357, 187, 118, 20);
+		taskpanel.add(due);
+
 		JPanel settings = new JPanel();
 		settings.setBounds(162, 76, 500, 483);
 		Home.add(settings);
 		settings.setLayout(null);
 		settings.setVisible(false);
-		
+
 		JLabel lblName = new JLabel("PIN:");
 		lblName.setBounds(58, 216, 80, 14);
 		settings.add(lblName);
-		
+
 		JLabel label = new JLabel("Name:");
 		label.setBounds(58, 116, 105, 14);
 		settings.add(label);
-		
+
 		textField_4 = new JTextField();
 		textField_4.setBounds(58, 141, 230, 20);
 		settings.add(textField_4);
 		textField_4.setColumns(10);
-		
+
 		PINField = new JPasswordField();
 		PINField.setBounds(58, 240, 105, 20);
 		settings.add(PINField);
 		PINField.setColumns(10);
-		
+
 		JLabel lblProfile = new JLabel("Profile");
 		lblProfile.setHorizontalAlignment(SwingConstants.CENTER);
 		lblProfile.setFont(new Font("Tahoma", Font.PLAIN, 33));
 		lblProfile.setBounds(189, 11, 112, 37);
 		settings.add(lblProfile);
-		
+
 		JButton btnSave = new JButton("Save");
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -231,78 +316,6 @@ public class GUI {
 		});
 		btnExit.setBounds(458, 11, 32, 23);
 		employeepanel.add(btnExit);
-
-		taskpanel = new JPanel();
-		taskpanel.setBounds(162, 76, 500, 483);
-		Home.add(taskpanel);
-		taskpanel.setLayout(null);
-		taskpanel.setVisible(false);
-
-		JLabel lblNewTask = new JLabel("New Task");
-		lblNewTask.setHorizontalAlignment(SwingConstants.CENTER);
-		lblNewTask.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		lblNewTask.setBounds(201, 11, 113, 28);
-		taskpanel.add(lblNewTask);
-
-		JLabel lblChooseATask = new JLabel("choose a task:");
-		lblChooseATask.setBounds(25, 95, 91, 20);
-		taskpanel.add(lblChooseATask);
-
-		JLabel lblAssignTo = new JLabel("Assign to:");
-		lblAssignTo.setBounds(25, 133, 91, 14);
-		taskpanel.add(lblAssignTo);
-
-		JLabel lblSetStartDate = new JLabel("set start date:");
-		lblSetStartDate.setBounds(25, 190, 91, 14);
-		taskpanel.add(lblSetStartDate);
-
-		JLabel lblSetDueDate = new JLabel("set due date:");
-		lblSetDueDate.setBounds(281, 190, 75, 14);
-		taskpanel.add(lblSetDueDate);
-
-		JLabel lblDescription = new JLabel("Description:");
-		lblDescription.setBounds(25, 231, 91, 14);
-		taskpanel.add(lblDescription);
-
-		JTextArea textArea = new JTextArea();
-		textArea.setBounds(25, 256, 450, 182);
-		taskpanel.add(textArea);
-
-		JButton button = new JButton(new ImageIcon("/Office_manager/close.png"));
-		button.setBounds(458, 11, 32, 23);
-		button.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				viewpanel.setVisible(false);
-				employeepanel.setVisible(false);
-				taskpanel.setVisible(false);
-			}
-		});
-		taskpanel.add(button);
-
-		JComboBox taskcomboBox = new JComboBox(task_db);
-		taskcomboBox.setBounds(126, 95, 218, 20);
-		taskpanel.add(taskcomboBox);
-
-		JComboBox employeecomboBox = new JComboBox(employee_db);
-		employeecomboBox.setBounds(126, 130, 218, 20);
-		taskpanel.add(employeecomboBox);
-
-		// UtilDateModel model = new UtilDateModel();
-		// JDatePanelImpl d = new JDatePanelImpl(model);
-
-		JButton btnAdd = new JButton("ADD");
-		btnAdd.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				task_obj = new Task(taskcomboBox.getSelectedItem().toString(), textArea.getText(),
-						employeecomboBox.getSelectedItem().toString(), "5/1/2021", "5/1/2021", "Ongoing", "5/1/2021", "");
-				task_obj.assign_task(task_key);
-
-				JOptionPane.showMessageDialog(frame, "New Task added successfully!", "Success",
-						JOptionPane.INFORMATION_MESSAGE);
-			}
-		});
-		btnAdd.setBounds(386, 449, 89, 23);
-		taskpanel.add(btnAdd);
 
 		JPanel toolbar = new JPanel();
 		toolbar.setBounds(0, 0, 152, 570);
@@ -433,7 +446,6 @@ public class GUI {
 		JSeparator separator_1 = new JSeparator();
 		separator_1.setBounds(10, 277, 132, 2);
 		toolbar.add(separator_1);
-		
 
 		JLabel lblTasksDue = new JLabel("2 tasks due today");
 		lblTasksDue.setHorizontalAlignment(SwingConstants.CENTER);
@@ -449,7 +461,7 @@ public class GUI {
 				tasks = mg.Notify_manager(date);
 				System.out.println(tasks.length);
 				lblTasksDue.setText(tasks.length + " tasks due today");
-				
+
 				table = new JTable(tasks, task_key);
 				table.setBounds(10, 12, 480, 419);
 				viewpanel.add(table);
@@ -476,7 +488,7 @@ public class GUI {
 		});
 		btnLogOut.setBounds(10, 396, 132, 23);
 		toolbar.add(btnLogOut);
-		
+
 		JButton btnSettings = new JButton("Settings");
 		btnSettings.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -541,7 +553,7 @@ public class GUI {
 
 					task_obj = new Task("", "", "", "", "", "", "", "");
 					tasks = task_obj.search_task(textField.getText());
-					
+
 					if (tasks.length <= 0) {
 						JOptionPane.showMessageDialog(frame, "No results found", "Error", JOptionPane.ERROR_MESSAGE);
 					}
@@ -555,19 +567,20 @@ public class GUI {
 
 					emp_obj = new Employee("", "", "");
 					employees = emp_obj.search_employee(textField.getText());
-					
+
 					if (employees.length <= 0) {
 						JOptionPane.showMessageDialog(frame, "No results found", "Error", JOptionPane.ERROR_MESSAGE);
 					}
-					
+
 					viewpanel.remove(table);
 					table = new JTable(employees, emp_key);
 					table.setBounds(10, 12, 480, 419);
 					viewpanel.add(table);
 					viewpanel.setVisible(true);
-					
+
 				} else {
-					JOptionPane.showMessageDialog(frame, "Please select a category", "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(frame, "Please select a category", "Error",
+							JOptionPane.ERROR_MESSAGE);
 				}
 
 				JScrollPane scrollPane = new JScrollPane(table);
@@ -649,7 +662,7 @@ public class GUI {
 						tasks = mg.Notify_manager(date);
 						System.out.println(tasks.length);
 						lblTasksDue.setText(tasks.length + " tasks due today");
-						
+
 					} else {
 						JOptionPane.showMessageDialog(frame, "Wrong PIN", "Error", JOptionPane.ERROR_MESSAGE);
 						passwordField.setText("");

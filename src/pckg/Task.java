@@ -4,7 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,7 +62,10 @@ public class Task extends DB_Queries {
 	}
 
 	public int submit_task(Map<String, String> row, String[] keys) {
+		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+		Date date = new Date(System.currentTimeMillis());
 		status = "Completed";
+		submission_date = formatter.format(date);
 		int ret = update_task(keys);
 		close_connect();
 		return ret;
@@ -122,10 +127,10 @@ public class Task extends DB_Queries {
 		row.put("title", title); // title
 		row.put("body", des); // body
 		row.put("employee", employee_name); // employee
-		row.put("start_date", "5/1/2021");
-		row.put("due_date", "5/1/2021");
+		row.put("start_date", creation_date);
+		row.put("due_date", deadline);
 		row.put("status", status);
-		row.put("submission_date", "5/1/2021");
+		row.put("submission_date", submission_date);
 		row.put("id", id);
 		return row;
 	}
